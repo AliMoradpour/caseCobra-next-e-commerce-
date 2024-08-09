@@ -46,8 +46,9 @@ function ReviewColumn({
 
   useEffect(() => {
     if (!columnRef.current) return;
+
     const resizeObserver = new window.ResizeObserver(() => {
-      setColumnHeight(columnRef.current.offsetHeight ?? 0);
+      setColumnHeight(columnRef.current?.offsetHeight ?? 0);
     });
 
     resizeObserver.observe(columnRef.current);
@@ -65,7 +66,7 @@ function ReviewColumn({
       {reviews.concat(reviews).map((imgSrc, reviewIndex) => (
         <Review
           key={reviewIndex}
-          className={reviewClassName?.(reviewIndex % Review.length)}
+          className={reviewClassName?.(reviewIndex % reviews.length)}
           imgSrc={imgSrc}
         />
       ))}
@@ -78,7 +79,7 @@ interface ReviewProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 function Review({ imgSrc, className, ...props }: ReviewProps) {
-  const POSSIBLE_ANIMATION_DELAY = [
+  const POSSIBLE_ANIMATION_DELAYS = [
     "0s",
     "0.1s",
     "0.2s",
@@ -88,14 +89,15 @@ function Review({ imgSrc, className, ...props }: ReviewProps) {
   ];
 
   const animationDelay =
-    POSSIBLE_ANIMATION_DELAY[
-      Math.floor(Math.random() * POSSIBLE_ANIMATION_DELAY.length)
+    POSSIBLE_ANIMATION_DELAYS[
+      Math.floor(Math.random() * POSSIBLE_ANIMATION_DELAYS.length)
     ];
 
   return (
     <div
       className={cn(
-        "animate-fade-in rounded-[2.25rem] bg-white p-6 opacity-0 shadow-xl shadow-slate900/5"
+        "animate-fade-in rounded-[2.25rem] bg-white p-6 opacity-0 shadow-xl shadow-slate-900/5",
+        className
       )}
       style={{ animationDelay }}
       {...props}>
@@ -104,7 +106,7 @@ function Review({ imgSrc, className, ...props }: ReviewProps) {
   );
 }
 
-const ReviewGrid = () => {
+function ReviewGrid() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.4 });
   const columns = splitArray(PHONES, 3);
@@ -115,8 +117,7 @@ const ReviewGrid = () => {
   return (
     <div
       ref={containerRef}
-      className="relative -mx-4 mt-16 grid h-[49rem] max-h-[150vh] grid-cols-1 items-start gap-8 overflow-hidden px-4 sm:mt-20 md:grid-cols-2 lg:grid-cols-3
-    ">
+      className="relative -mx-4 mt-16 grid h-[49rem] max-h-[150vh] grid-cols-1 items-start gap-8 overflow-hidden px-4 sm:mt-20 md:grid-cols-2 lg:grid-cols-3">
       {isInView ? (
         <>
           <ReviewColumn
@@ -148,9 +149,9 @@ const ReviewGrid = () => {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-100" />
     </div>
   );
-};
+}
 
-const Reviews = () => {
+export function Reviews() {
   return (
     <MaxWidthWrapper className="relative max-w-5xl">
       <img
@@ -162,6 +163,4 @@ const Reviews = () => {
       <ReviewGrid />
     </MaxWidthWrapper>
   );
-};
-
-export default Reviews;
+}
